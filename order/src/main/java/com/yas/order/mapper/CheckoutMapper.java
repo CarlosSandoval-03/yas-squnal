@@ -9,18 +9,22 @@ import com.yas.order.viewmodel.checkout.CheckoutVm;
 import java.math.BigDecimal;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
-@Component
 public interface CheckoutMapper {
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "checkout", ignore = true)
+    @Mapping(target = "productName", ignore = true)
+    @Mapping(target = "productPrice", ignore = true)
+    @Mapping(target = "taxAmount", ignore = true)
+    @Mapping(target = "shipmentFee", ignore = true)
+    @Mapping(target = "shipmentTax", ignore = true)
+    @Mapping(target = "discountAmount", ignore = true)
     CheckoutItem toModel(CheckoutItemPostVm checkoutItemPostVm);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "checkoutState", ignore = true)
+    @Mapping(target = "shippingAddressId", ignore = true)
     Checkout toModel(CheckoutPostVm checkoutPostVm);
 
     @Mapping(target = "checkoutId", source = "checkout.id")
