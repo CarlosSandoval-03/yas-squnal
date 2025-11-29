@@ -61,6 +61,8 @@ Cada nivel aumenta progresivamente el acoplamiento y disminuye el uso de mocks.
 
 #### Nivel 3: End-to-End
 
+Pendiente de implementar 
+
 | ID | Escenario | Pasos | Resultado Esperado |
 |----|-----------|-------|-------------------|
 | **PAYMENT-E2E-01** | Flujo completo de pago | Usuario en checkout → Selecciona método de pago → Confirma → Pago procesado | Pago completado y orden creada |
@@ -86,20 +88,12 @@ Cada nivel aumenta progresivamente el acoplamiento y disminuye el uso de mocks.
 
 #### Nivel 3: End-to-End
 
+Pendiente de implementar 
+
 | ID | Escenario | Pasos | Resultado Esperado |
 |----|-----------|-------|-------------------|
 | **ORDER-E2E-01** | Flujo completo de checkout | Usuario en carrito → Procede a checkout → Completa información → Confirma | Orden creada y visible en historial |
 | **ORDER-E2E-02** | Flujo checkout con pago | Checkout → Selección método pago → Pago → Confirmación | Orden completada con pago procesado |
-
----
-
-## Flujos de Integración Entre Servicios
-
-### Flujo Completo: Cart → Order → Payment
-
-| ID | Escenario | Pasos | Resultado Esperado |
-|----|-----------|-------|-------------------|
-| **FLOW-INT-01** | Flujo completo de compra | 1. Agregar items a cart<br>2. Crear checkout desde cart<br>3. Inicializar pago<br>4. Capturar pago<br>5. Completar orden | Datos consistentes en Cart, Order y Payment DBs |
 
 ---
 
@@ -162,12 +156,6 @@ order/
 
 Testcontainers levanta una base de datos PostgreSQL real en un contenedor Docker durante los tests.
 
-**Ventajas:**
-- Base de datos real: Los tests validan persistencia real, no mocks
-- Aislamiento: Cada ejecución usa su propia base de datos limpia
-- Automatización: El contenedor se crea antes de los tests y se destruye después
-- Consistencia: Mismo entorno en todos los ambientes (desarrollo, CI/CD)
-
 **Configuración:**
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -188,26 +176,4 @@ class CartItemControllerIT {
     }
 }
 ```
-
----
-
-## Criterios de Éxito
-
-- Tests de integración cubren flujos críticos de negocio
-- Tests validan persistencia real en base de datos usando Testcontainers
-- Tests validan contrato API y estructura JSON para frontend
-- Tests son ejecutables de forma independiente
-- Tests usan datos aislados (no interfieren entre sí)
-
----
-
-## Estado de Implementación
-
-- Estructura de carpetas `src/it` creada
-- Dependencias de Testcontainers agregadas
-- Tests Nivel 1 (Backend ↔ DB) implementados para Cart, Payment y Order
-- Tests Nivel 2 (Frontend ↔ Backend) implementados para Cart, Payment y Order
-- Tests Nivel 3 (E2E) implementados para Cart con Selenium
-- Scripts de ejecución automatizados creados
-- Documentación actualizada
 
