@@ -1,19 +1,23 @@
 @echo off
-REM Script para ejecutar todos los tests de integración Nivel 1 (Backend ↔ Database)
+REM Script para ejecutar todos los tests de integracion Nivel 2 (Frontend <-> Backend)
 REM Microservicios: Cart, Payment, Order
 
 echo ========================================
-echo Tests de Integracion - Nivel 1
-echo Backend ^<^> Database
+echo Tests de Integracion - Nivel 2
+echo Frontend ^<^> Backend
 echo ========================================
 echo.
 
 set PROJECT_ROOT=%~dp0
 cd /d "%PROJECT_ROOT%"
 
-echo [1/3] Ejecutando tests de Cart...
+set CART_FAILED=0
+set PAYMENT_FAILED=0
+set ORDER_FAILED=0
+
+echo [1/3] Ejecutando tests de Cart (Nivel 2)...
 echo ----------------------------------------
-call mvn -pl cart -am clean compile failsafe:integration-test -Dsurefire.skip=true -Drevision=1.0-SNAPSHOT 2>&1 | findstr /v "No tests to run"
+call mvn -pl cart -am clean compile failsafe:integration-test -Dsurefire.skip=true -Drevision=1.0-SNAPSHOT -Dit.test="*Level2IT" 2>&1 | findstr /v "No tests to run"
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Tests de Cart fallaron
@@ -25,9 +29,9 @@ if %ERRORLEVEL% NEQ 0 (
 )
 echo.
 
-echo [2/3] Ejecutando tests de Payment...
+echo [2/3] Ejecutando tests de Payment (Nivel 2)...
 echo ----------------------------------------
-call mvn -pl payment -am clean compile failsafe:integration-test -Dsurefire.skip=true -Drevision=1.0-SNAPSHOT 2>&1 | findstr /v "No tests to run"
+call mvn -pl payment -am clean compile failsafe:integration-test -Dsurefire.skip=true -Drevision=1.0-SNAPSHOT -Dit.test="*Level2IT" 2>&1 | findstr /v "No tests to run"
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Tests de Payment fallaron
@@ -39,9 +43,9 @@ if %ERRORLEVEL% NEQ 0 (
 )
 echo.
 
-echo [3/3] Ejecutando tests de Order...
+echo [3/3] Ejecutando tests de Order (Nivel 2)...
 echo ----------------------------------------
-call mvn -pl order -am clean compile failsafe:integration-test -Dsurefire.skip=true -Drevision=1.0-SNAPSHOT 2>&1 | findstr /v "No tests to run"
+call mvn -pl order -am clean compile failsafe:integration-test -Dsurefire.skip=true -Drevision=1.0-SNAPSHOT -Dit.test="*Level2IT" 2>&1 | findstr /v "No tests to run"
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [ERROR] Tests de Order fallaron
@@ -92,4 +96,5 @@ echo ========================================
 echo Todos los tests pasaron correctamente!
 echo ========================================
 exit /b 0
+
 

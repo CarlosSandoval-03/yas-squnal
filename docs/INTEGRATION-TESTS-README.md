@@ -2,14 +2,18 @@
 
 ## Estructura Implementada
 
-Se han creado tests de integración para los microservicios críticos siguiendo la arquitectura de 3 niveles:
+Tests de integración para los microservicios Cart, Payment y Order siguiendo arquitectura de 3 niveles:
 
 ### Nivel 1: Backend ↔ Database
-- Tests que validan la persistencia real en base de datos PostgreSQL usando Testcontainers
+- Validan persistencia real en PostgreSQL usando Testcontainers
 - Ubicación: `src/it/java/**/*IT.java`
 
 ### Nivel 2: Frontend ↔ Backend
-- Tests que validan la comunicación entre frontend y backend (pendiente de implementar)
+- Validan contrato API y estructura JSON de respuestas HTTP
+- Validan headers HTTP y códigos de estado
+- Usan MockMvc para simular requests HTTP
+- Usan jwt() para autenticación en tests
+- Ubicación: `src/it/java/**/*Level2IT.java`
 
 ### Nivel 3: End-to-End
 - Tests E2E con Playwright (pendiente de implementar)
@@ -18,25 +22,35 @@ Se han creado tests de integración para los microservicios críticos siguiendo 
 
 ## Módulos con Tests de Integración
 
-### ✅ Cart Service
-- **Archivo**: `cart/src/it/java/com/yas/cart/controller/CartItemControllerIT.java`
-- **Casos implementados**:
-  - CART-BE-INT-01: Agregar item al carrito y verificar persistencia
-  - CART-BE-INT-02: Leer items del carrito y verificar estructura JSON
-  - CART-BE-INT-03: Actualizar cantidad de item
-  - CART-BE-INT-04: Eliminar item del carrito
+### Cart Service
 
-### ✅ Payment Service
-- **Archivo**: `payment/src/it/java/com/yas/payment/controller/PaymentControllerIT.java`
-- **Casos implementados**:
-  - PAYMENT-BE-INT-01: Captura exitosa → persistencia en tabla `payment`
-  - PAYMENT-BE-INT-02: Captura fallida → registro con `failureMessage`
+**Nivel 1 - Backend ↔ Database:**
+- Archivo: `cart/src/it/java/com/yas/cart/controller/CartItemControllerIT.java`
+- Casos: CART-BE-INT-01 a CART-BE-INT-04 (agregar, leer, actualizar, eliminar items)
 
-### ✅ Order Service
-- **Archivo**: `order/src/it/java/com/yas/order/controller/CheckoutControllerIT.java`
-- **Casos implementados**:
-  - ORDER-BE-INT-01: Creación de checkout con items enriquecidos
-  - ORDER-BE-INT-02: Actualización de estado `COMPLETED` y retorno de `orderId`
+**Nivel 2 - Frontend ↔ Backend:**
+- Archivo: `cart/src/it/java/com/yas/cart/controller/CartItemControllerLevel2IT.java`
+- Casos: CART-FE-INT-01, CART-FE-INT-02 (validación de estructura JSON y contrato API)
+
+### Payment Service
+
+**Nivel 1 - Backend ↔ Database:**
+- Archivo: `payment/src/it/java/com/yas/payment/controller/PaymentControllerIT.java`
+- Casos: PAYMENT-BE-INT-01, PAYMENT-BE-INT-02 (captura exitosa y fallida)
+
+**Nivel 2 - Frontend ↔ Backend:**
+- Archivo: `payment/src/it/java/com/yas/payment/controller/PaymentControllerLevel2IT.java`
+- Casos: PAYMENT-FE-INT-01, PAYMENT-FE-INT-02, PAYMENT-FE-INT-03 (init, capture, cancel)
+
+### Order Service
+
+**Nivel 1 - Backend ↔ Database:**
+- Archivo: `order/src/it/java/com/yas/order/controller/CheckoutControllerIT.java`
+- Casos: ORDER-BE-INT-01, ORDER-BE-INT-02 (crear checkout, actualizar estado)
+
+**Nivel 2 - Frontend ↔ Backend:**
+- Archivo: `order/src/it/java/com/yas/order/controller/CheckoutControllerLevel2IT.java`
+- Casos: ORDER-FE-INT-01, ORDER-FE-INT-02 (crear checkout, obtener checkout)
 
 ---
 
@@ -44,96 +58,104 @@ Se han creado tests de integración para los microservicios críticos siguiendo 
 
 ### Scripts Automatizados
 
-Para ejecutar **todos los tests de Nivel 1** (Cart, Payment, Order) de una vez:
+**Ejecutar tests de Nivel 1 (Backend ↔ Database):**
 
-**Windows (Command Prompt o PowerShell):**
+Windows:
 ```cmd
-cd "C:\Users\gagar\Desktop\Diplomado QA\yas-squnal"
 run-integration-tests-level1.bat
 ```
 
-**Linux/Mac/Git Bash:**
+Linux/Mac/Git Bash:
 ```bash
-cd yas-squnal
-chmod +x run-integration-tests-level1.sh
 ./run-integration-tests-level1.sh
 ```
 
-Los scripts ejecutan los tests en orden y muestran un resumen al final indicando qué módulos pasaron o fallaron.
+**Ejecutar tests de Nivel 2 (Frontend ↔ Backend):**
+
+Windows:
+```cmd
+run-integration-tests-level2.bat
+```
+
+Linux/Mac/Git Bash:
+```bash
+./run-integration-tests-level2.sh
+```
+
+Los scripts ejecutan los tests en orden y muestran un resumen al final.
 
 ### Ejecutar Tests Manualmente
 
 ### Prerequisitos
-- ✅ **Docker Desktop corriendo** (para Testcontainers - **OBLIGATORIO**)
-- ✅ Maven 3.8+
-- ✅ Java 21
-- ✅ Proyecto compilado (common-library instalado)
+- Docker Desktop corriendo (obligatorio para Testcontainers)
+- Maven 3.8+
+- Java 21
+- Proyecto compilado (common-library instalado)
 
 ### Paso 1: Verificar Docker Desktop
 
-**IMPORTANTE**: Docker Desktop debe estar corriendo antes de ejecutar los tests.
+Docker Desktop debe estar corriendo antes de ejecutar los tests.
 
 ```powershell
-# Verificar que Docker está corriendo
 docker ps
-# Si funciona, verás una lista (puede estar vacía, está bien)
 ```
 
-Si Docker no está corriendo:
-1. Abre Docker Desktop
-2. Espera a que esté completamente iniciado (ícono de Docker en la bandeja del sistema)
-3. Verifica con `docker ps` nuevamente
+Si Docker no está corriendo, inicia Docker Desktop y espera a que esté completamente iniciado.
 
 ### Paso 2: Compilar el proyecto (primera vez)
 
 ```powershell
-# Desde la raíz del proyecto
-cd "C:\Users\gagar\Desktop\Diplomado QA\yas-squnal"
-
-# Compilar common-library primero (requerido por cart)
 mvn clean install -DskipTests -pl common-library
-
-# Luego compilar cart
 mvn clean install -DskipTests -pl cart
 ```
 
-### Paso 3: Ejecutar tests de integración de Cart
+### Paso 3: Ejecutar tests de integración
+
+**Ejecutar tests de Nivel 1 (Backend ↔ Database):**
 
 ```powershell
-# Opción 1: Ejecutar solo tests de integración
 cd cart
-mvn failsafe:integration-test
+mvn clean compile failsafe:integration-test -Dsurefire.skip=true -Dit.test="*IT" -Dit.test="!*Level2IT"
 
-# Opción 2: Ejecutar todos los tests (unitarios + integración)
-cd cart
-mvn verify
+cd payment
+mvn clean compile failsafe:integration-test -Dsurefire.skip=true -Dit.test="*IT" -Dit.test="!*Level2IT"
 
-# Opción 3: Ejecutar un test específico
+cd order
+mvn clean compile failsafe:integration-test -Dsurefire.skip=true -Dit.test="*IT" -Dit.test="!*Level2IT"
+```
+
+**Ejecutar tests de Nivel 2 (Frontend ↔ Backend):**
+
+```powershell
 cd cart
-mvn test -Dtest=CartItemControllerIT#testAddCartItem_ThenReadFromDatabase
+mvn clean compile failsafe:integration-test -Dsurefire.skip=true -Dit.test="*Level2IT"
+
+cd payment
+mvn clean compile failsafe:integration-test -Dsurefire.skip=true -Dit.test="*Level2IT"
+
+cd order
+mvn clean compile failsafe:integration-test -Dsurefire.skip=true -Dit.test="*Level2IT"
+```
+
+**Ejecutar un test específico:**
+
+```powershell
+# Test específico de Nivel 1
+cd cart
+mvn failsafe:integration-test -Dit.test=CartItemControllerIT#testAddCartItem_ThenReadFromDatabase
+
+# Test específico de Nivel 2 (validación de contrato API)
+cd cart
+mvn failsafe:integration-test -Dit.test=CartItemControllerLevel2IT#testGetCartItems_ValidatesJsonStructureForFrontend
 ```
 
 ### Paso 4: Ver resultados
 
-Los tests mostrarán:
-- ✅ **Tests pasando**: Verás `BUILD SUCCESS`
-- ❌ **Tests fallando**: Verás el error específico y stack trace
+Los tests mostrarán `BUILD SUCCESS` si pasan, o el error específico si fallan.
 
-**Ejemplo de salida exitosa:**
+Ejemplo de salida exitosa:
 ```
-[INFO] --- failsafe:integration-test (default) @ cart ---
-[INFO] 
-[INFO] -------------------------------------------------------
-[INFO]  T E S T S
-[INFO] -------------------------------------------------------
-[INFO] Running com.yas.cart.controller.CartItemControllerIT
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.234 s
-[INFO] 
-[INFO] Results:
-[INFO] 
 [INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
-[INFO] 
-[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 ```
 
@@ -171,28 +193,43 @@ docker info
 ## Configuración
 
 ### Testcontainers
-Los tests usan PostgreSQL 16 en contenedor Docker. El contenedor se levanta automáticamente y se destruye después de los tests.
+
+Testcontainers se usa para levantar una base de datos PostgreSQL real en un contenedor Docker durante la ejecución de los tests.
+
+**Ventajas:**
+- Base de datos real: Los tests validan persistencia real, no mocks
+- Aislamiento: Cada ejecución de tests usa su propia base de datos limpia
+- Automatización: El contenedor se crea antes de los tests y se destruye después
+- Consistencia: Mismo entorno de base de datos en todos los ambientes (desarrollo, CI/CD)
+
+**Configuración:**
+- PostgreSQL 16 en contenedor Docker
+- Se levanta automáticamente antes de los tests
+- Se destruye automáticamente después de los tests
+- Configuración en `@DynamicPropertySource` para inyectar URL, usuario y contraseña
 
 ### Configuración de Tests
+
 Cada módulo tiene su archivo `src/it/resources/application-it.properties` con configuración específica para tests de integración.
 
 ---
 
+## Características de los Tests
+
+### Nivel 1 (Backend ↔ Database)
+- Base de datos real PostgreSQL usando Testcontainers
+- Tests transaccionales que limpian datos después de cada ejecución
+- Validan persistencia real en base de datos
+- Usan `MockedStatic` para mockear `AuthenticationUtils` (no hay Keycloak en tests)
+
+### Nivel 2 (Frontend ↔ Backend)
+- Validan estructura JSON de respuestas HTTP
+- Validan headers HTTP y códigos de estado
+- Validan el contrato API que el frontend espera consumir
+- Usan `MockMvc` para simular requests HTTP sin levantar servidor completo
+- Usan `jwt()` para autenticación en tests
+
 ## Próximos Pasos
 
-1. ✅ Estructura base creada
-2. ✅ Tests de integración para Cart (Nivel 1)
-3. ✅ Tests de integración para Payment (Nivel 1)
-4. ✅ Tests de integración para Order (Nivel 1)
-5. ⏳ Tests Nivel 2 (Frontend ↔ Backend)
-6. ⏳ Tests Nivel 3 (E2E)
-
----
-
-## Notas Importantes
-
-- Los tests de integración usan una base de datos real (PostgreSQL en Docker)
-- Los tests son transaccionales y limpian datos después de cada ejecución
-- Se usa `MockedStatic` para mockear `AuthenticationUtils` ya que no hay Keycloak en tests
-- Los tests validan tanto la respuesta HTTP como la persistencia en base de datos
+- Tests Nivel 3 (E2E) con Playwright (pendiente)
 

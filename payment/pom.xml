@@ -4,11 +4,11 @@
     <parent>
         <groupId>com.yas</groupId>
         <artifactId>yas</artifactId>
-        <version>${revision}</version>
+        <version>1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>payment</artifactId>
-    <version>${revision}</version>
+    <version>1.0-SNAPSHOT</version>
     <name>payment</name>
     <description>Payment Service for Yas Project</description>
     <properties>
@@ -71,12 +71,12 @@
         <dependency>
             <groupId>com.yas</groupId>
             <artifactId>common-library</artifactId>
-            <version>${revision}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.yas</groupId>
             <artifactId>common-library</artifactId>
-            <version>${revision}</version>
+            <version>1.0-SNAPSHOT</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>
@@ -84,12 +84,12 @@
         <dependency>
             <groupId>com.yas</groupId>
             <artifactId>payment-paypal</artifactId>
-            <version>${revision}</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.yas</groupId>
             <artifactId>payment-paypal</artifactId>
-            <version>${revision}</version>
+            <version>1.0-SNAPSHOT</version>
             <classifier>tests</classifier>
             <type>test-jar</type>
             <scope>test</scope>

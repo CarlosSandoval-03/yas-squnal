@@ -113,11 +113,10 @@ cart/
       java/
         com/yas/cart/
           controller/
-            CartItemControllerIT.java      # Nivel 1: Backend ↔ DB
-          service/
-            CartItemServiceIT.java         # Nivel 1: Service ↔ DB
+            CartItemControllerIT.java           # Nivel 1: Backend ↔ DB
+            CartItemControllerLevel2IT.java     # Nivel 2: Frontend ↔ Backend
       resources/
-        application-it.properties          # Configuración para tests
+        application-it.properties              # Configuración para tests
 
 payment/
   src/
@@ -125,9 +124,10 @@ payment/
       java/
         com/yas/payment/
           controller/
-            PaymentControllerIT.java       # Nivel 1: Backend ↔ DB
-          service/
-            PaymentServiceIT.java          # Nivel 1: Service ↔ DB
+            PaymentControllerIT.java           # Nivel 1: Backend ↔ DB
+            PaymentControllerLevel2IT.java     # Nivel 2: Frontend ↔ Backend
+      resources/
+        application-it.properties
 
 order/
   src/
@@ -135,17 +135,8 @@ order/
       java/
         com/yas/order/
           controller/
-            CheckoutControllerIT.java      # Nivel 1: Backend ↔ DB
-          service/
-            CheckoutServiceIT.java         # Nivel 1: Service ↔ DB
-
-# Tests de integración entre servicios
-integration-tests/
-  src/
-    test/
-      java/
-        com/yas/integration/
-          CartOrderPaymentFlowIT.java      # Flujo completo entre servicios
+            CheckoutControllerIT.java          # Nivel 1: Backend ↔ DB
+            CheckoutControllerLevel2IT.java    # Nivel 2: Frontend ↔ Backend
       resources/
         application-it.properties
 ```
@@ -157,22 +148,26 @@ integration-tests/
 ### Backend Tests (Nivel 1 y 2)
 - **@SpringBootTest**: Levanta contexto completo de Spring
 - **Testcontainers**: PostgreSQL real en contenedor Docker
-- **RestAssured** o **MockMvc**: Para hacer requests HTTP
+- **MockMvc**: Para simular requests HTTP en tests de Nivel 2
 - **JUnit 5**: Framework de testing
 
-### Frontend Tests (Nivel 2)
-- **@testing-library/react**: Para renderizar componentes
-- **MSW (Mock Service Worker)**: Opcional para interceptar requests
-- **Jest**: Framework de testing
-
 ### E2E Tests (Nivel 3)
-- **Playwright**: Para automatización de navegador
-- **Docker Compose**: Para levantar stack completo
+- **Playwright**: Para automatización de navegador (pendiente)
+- **Docker Compose**: Para levantar stack completo (pendiente)
 
 ---
 
-## Configuración de Testcontainers
+## Testcontainers
 
+Testcontainers levanta una base de datos PostgreSQL real en un contenedor Docker durante los tests.
+
+**Ventajas:**
+- Base de datos real: Los tests validan persistencia real, no mocks
+- Aislamiento: Cada ejecución usa su propia base de datos limpia
+- Automatización: El contenedor se crea antes de los tests y se destruye después
+- Consistencia: Mismo entorno en todos los ambientes (desarrollo, CI/CD)
+
+**Configuración:**
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
@@ -197,23 +192,21 @@ class CartItemControllerIT {
 
 ## Criterios de Éxito
 
-✅ Tests de integración cubren flujos críticos de negocio  
-✅ Tests validan persistencia real en base de datos  
-✅ Tests validan comunicación entre servicios  
-✅ Tests E2E validan experiencia completa del usuario  
-✅ Tests son ejecutables de forma independiente  
-✅ Tests usan datos aislados (no interfieren entre sí)  
+- Tests de integración cubren flujos críticos de negocio
+- Tests validan persistencia real en base de datos usando Testcontainers
+- Tests validan contrato API y estructura JSON para frontend
+- Tests son ejecutables de forma independiente
+- Tests usan datos aislados (no interfieren entre sí)
 
 ---
 
-## Próximos Pasos
+## Estado de Implementación
 
-1. ✅ Crear estructura de carpetas `src/it`
-2. ✅ Agregar dependencias de Testcontainers a cada módulo
-3. ✅ Implementar tests Nivel 1 (Backend ↔ DB) para Cart
-4. ✅ Implementar tests Nivel 1 (Backend ↔ DB) para Payment
-5. ✅ Implementar tests Nivel 1 (Backend ↔ DB) para Order
-6. ✅ Implementar tests Nivel 2 (Frontend ↔ Backend)
-7. ✅ Implementar tests Nivel 3 (E2E)
-8. ✅ Documentar cómo ejecutar los tests
+- Estructura de carpetas `src/it` creada
+- Dependencias de Testcontainers agregadas
+- Tests Nivel 1 (Backend ↔ DB) implementados para Cart, Payment y Order
+- Tests Nivel 2 (Frontend ↔ Backend) implementados para Cart, Payment y Order
+- Scripts de ejecución automatizados creados
+- Documentación actualizada
+- Tests Nivel 3 (E2E) pendiente
 
