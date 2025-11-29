@@ -9,7 +9,7 @@ Implementar tests de integración para los microservicios críticos: **Cart**, *
 |-------|--------------|--------|------------|
 | **Nivel 1** | Backend ↔ Database | Ejecución SQL vía HTTP requests | `@SpringBootTest` + `Testcontainers` (PostgreSQL) |
 | **Nivel 2** | Frontend ↔ Backend | Uso de API desde frontend con backend real | `@SpringBootTest` + `MockMvc` / `RestAssured` |
-| **Nivel 3** | End-to-End | Simulación de navegador, stack completo, base de datos real | `Playwright` / `Selenium` |
+| **Nivel 3** | End-to-End | API HTTP real → Database → Frontend, sin mocks en llamadas HTTP | `Selenium WebDriver` + `RestTemplate` |
 
 Cada nivel aumenta progresivamente el acoplamiento y disminuye el uso de mocks.
 
@@ -39,8 +39,7 @@ Cada nivel aumenta progresivamente el acoplamiento y disminuye el uso de mocks.
 
 | ID | Escenario | Pasos | Resultado Esperado |
 |----|-----------|-------|-------------------|
-| **CART-E2E-01** | Flujo completo agregar item | Usuario navega → Selecciona producto → Agrega al carrito → Verifica en carrito | Item visible en página de carrito |
-| **CART-E2E-02** | Flujo completo actualizar cantidad | Usuario en carrito → Modifica cantidad → Guarda | Cantidad actualizada visible en UI |
+| **CART-E2E-01** | Flujo completo de carrito | 1. Agregar item vía API HTTP real<br>2. Verificar en DB<br>3. Verificar en frontend<br>4. Actualizar cantidad vía API<br>5. Verificar en DB<br>6. Eliminar item vía API<br>7. Verificar en DB y frontend | Flujo completo validado: API → DB → Frontend, sin mocks en llamadas HTTP |
 
 ---
 
@@ -115,6 +114,7 @@ cart/
           controller/
             CartItemControllerIT.java           # Nivel 1: Backend ↔ DB
             CartItemControllerLevel2IT.java     # Nivel 2: Frontend ↔ Backend
+            CartItemControllerE2EIT.java        # Nivel 3: End-to-End
       resources/
         application-it.properties              # Configuración para tests
 
@@ -152,8 +152,9 @@ order/
 - **JUnit 5**: Framework de testing
 
 ### E2E Tests (Nivel 3)
-- **Playwright**: Para automatización de navegador (pendiente)
-- **Docker Compose**: Para levantar stack completo (pendiente)
+- **Selenium WebDriver**: Para automatización de navegador
+- **Chrome Headless**: Para ejecución sin interfaz gráfica
+- **WebDriverManager**: Para gestión automática de drivers
 
 ---
 
@@ -206,7 +207,7 @@ class CartItemControllerIT {
 - Dependencias de Testcontainers agregadas
 - Tests Nivel 1 (Backend ↔ DB) implementados para Cart, Payment y Order
 - Tests Nivel 2 (Frontend ↔ Backend) implementados para Cart, Payment y Order
+- Tests Nivel 3 (E2E) implementados para Cart con Selenium
 - Scripts de ejecución automatizados creados
 - Documentación actualizada
-- Tests Nivel 3 (E2E) pendiente
 
